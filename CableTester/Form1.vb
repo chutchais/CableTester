@@ -12,10 +12,13 @@ Public Class frmMain
     Dim vCurrentRowIndex As Integer
     Dim vCurrentPortValue As Boolean
     Dim vCurrentPortAddress As String
+    Dim vCurrentSourcePortAddress As String
 
     Dim colTest As Collection
     Dim vTotolPass As Integer
     Dim vTotolFail As Integer
+
+    Dim vDelay As Integer
 
     Private Sub cmdUpload_Click(sender As Object, e As EventArgs) Handles cmdUpload.Click
         With OpenFileDialog1
@@ -149,6 +152,11 @@ Public Class frmMain
         vPortName = My_Ini.GetValue("Setting", "COMPORT")
         lblComport.Text = vPortName
 
+        Dim strDelay As String
+        strDelay = My_Ini.GetValue("Setting", "delay")
+        vDelay = IIf(strDelay = "", 500, Val(strDelay))
+        lblDelay.Text = vDelay.ToString
+
 
 
         Dim tt As ToolTip = New ToolTip()
@@ -164,6 +172,7 @@ Public Class frmMain
         'To enable auto reconnect to comport function
         sensorPort = New SerialPort(vPortName)
         With sensorPort
+
             .BaudRate = 9600
             .Parity = Parity.None
             .StopBits = StopBits.One
@@ -185,7 +194,7 @@ Public Class frmMain
         'SendSerialData("CHK " & Trim(Str(1)))
         For i = 1 To 8
             SendSerialData("CHK " & Trim(Str(i)))
-            System.Threading.Thread.Sleep(1000)
+            System.Threading.Thread.Sleep(vDelay)
             Application.DoEvents()
         Next
     End Sub
@@ -215,7 +224,13 @@ Public Class frmMain
     End Sub
 
     Private Sub btnTestPort_Click(sender As Object, e As EventArgs) Handles btnTestPort.Click
-        SendSerialData("CHK 1")
+        If DataGridView1.SelectedRows.Count > 0 Then
+            Dim rowIndex As Integer
+            rowIndex = DataGridView1.SelectedRows(0).Index
+            Dim vPortAddress As String
+            vPortAddress = DataGridView1.Rows(rowIndex).Cells(4).Value
+            testAddress(vPortAddress)
+        End If
     End Sub
 
 
@@ -364,6 +379,21 @@ Public Class frmMain
         Return True
     End Function
 
+    Sub testAddress(vPortAddress As String)
+        '1)set Source port to be OUTPUT
+        setPortOutput(vPortAddress)
+
+        '3)Set Source port to High
+        setPortHigh(vPortAddress)
+
+        System.Threading.Thread.Sleep(2000)
+        '4)Read Target port
+        Application.DoEvents()
+        setPortLow(vPortAddress)
+        setPortInput(vPortAddress)
+
+    End Sub
+
     Function getPortAddress(vConnectorName As String, vPinName As String) As String
         Dim dt As DataTable = DtSet.Tables(0)
         Dim drs() As DataRow
@@ -432,6 +462,12 @@ Public Class frmMain
         TestAllList()
         Me.Cursor = Cursors.Default
 
+        If vTotolFail = 0 Then
+            frmPass.ShowDialog()
+        Else
+            frmFail.ShowDialog()
+        End If
+
         'lblPassed.Text = vTotolPass.ToString
     End Sub
 
@@ -483,8 +519,8 @@ Public Class frmMain
         readPort(vPortAddrTarget)
         Application.DoEvents()
 
-        System.Threading.Thread.Sleep(500)
-
+        System.Threading.Thread.Sleep(vDelay)
+        setPortInput(vPortAddrSource)
 
     End Sub
 
@@ -517,7 +553,7 @@ Public Class frmMain
         setPortInput(vPortAddrSource)
         System.Threading.Thread.Sleep(50)
 
-        showStepTesting(vCurrentStep & " (Port:" & vPortAddrTarget & ")")
+        showStepTesting(vCurrentStep & " (Port:" & vPortAddrSource & " - " & vPortAddrTarget & ")")
         showResultTesting("reset.")
 
         DataGridView2.Rows(rowIndex).Cells(7).Value = ""
@@ -598,6 +634,51 @@ Public Class frmMain
         sw.Close()
         Me.Cursor = Cursors.Default
         MsgBox("Report finished")
+        Process.Start(strFile)
+    End Sub
+
+    Private Sub cbDeley_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDeley.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub cbDeley_TextChanged(sender As Object, e As EventArgs) Handles cbDeley.TextChanged
+        vDelay = Val(cbDeley.Text)
+        lblDelay.Text = vDelay.ToString
+    End Sub
+
+    Private Sub btnShowFail_Click(sender As Object, e As EventArgs) Handles btnShowFail.Click
+        If DtSet.Tables(1).Rows.Count = 0 Then
+            MsgBox("No Recipe data", MsgBoxStyle.Information, "No Recipe data")
+            Exit Sub
+        End If
+
+        Me.Cursor = Cursors.WaitCursor
+        Dim strFile As String = "report.txt"
+        Dim fileExists As Boolean = File.Exists(strFile)
+        Dim sw As StreamWriter
+        If fileExists Then
+            File.Delete(strFile)
+            sw = New StreamWriter(File.Open(strFile, FileMode.OpenOrCreate))
+        Else
+            sw = New StreamWriter(File.Open(strFile, FileMode.Create))
+        End If
+
+        sw.WriteLine("Recipe File name : " & TextBox1.Text)
+        sw.WriteLine("Testing time : " & Now)
+
+        Dim vOutput As String = ""
+        For i = 0 To DataGridView2.RowCount - 1
+            vOutput = "Step :" & DataGridView2.Rows(i).Cells(0).Value & vbTab & "Signal : " & DataGridView2.Rows(i).Cells(1).Value & vbTab &
+                        "From : " & DataGridView2.Rows(i).Cells(2).Value & "(Pin " & DataGridView2.Rows(i).Cells(3).Value & ") " &
+                        "To : " & DataGridView2.Rows(i).Cells(4).Value & "(Pin " & DataGridView2.Rows(i).Cells(5).Value & ") " &
+                        vbTab & DataGridView2.Rows(i).Cells(7).Value
+            If DataGridView2.Rows(i).Cells(7).Value = "FAILED" Then
+                sw.WriteLine(vOutput)
+            End If
+        Next
+        sw.Close()
+        Me.Cursor = Cursors.Default
+        'MsgBox("Report finished")
         Process.Start(strFile)
     End Sub
 End Class
