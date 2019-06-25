@@ -55,6 +55,7 @@ Partial Class frmMain
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.btnShowFail = New System.Windows.Forms.Button()
         Me.lblFailed = New System.Windows.Forms.Label()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.lblPassed = New System.Windows.Forms.Label()
@@ -75,7 +76,8 @@ Partial Class frmMain
         Me.btnClear = New System.Windows.Forms.Button()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.btnShowFail = New System.Windows.Forms.Button()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.txtLotnumber = New System.Windows.Forms.TextBox()
         Me.GroupBox1.SuspendLayout()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
@@ -92,6 +94,8 @@ Partial Class frmMain
         '
         Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.GroupBox1.Controls.Add(Me.txtLotnumber)
+        Me.GroupBox1.Controls.Add(Me.Label12)
         Me.GroupBox1.Controls.Add(Me.cbDeley)
         Me.GroupBox1.Controls.Add(Me.Label13)
         Me.GroupBox1.Controls.Add(Me.lblDelay)
@@ -301,7 +305,7 @@ Partial Class frmMain
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1152, 292)
+        Me.TabPage1.Size = New System.Drawing.Size(1213, 292)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Master"
         Me.TabPage1.UseVisualStyleBackColor = True
@@ -318,7 +322,7 @@ Partial Class frmMain
         Me.TableLayoutPanel2.RowCount = 2
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1146, 286)
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1207, 286)
         Me.TableLayoutPanel2.TabIndex = 3
         '
         'DataGridView1
@@ -328,7 +332,7 @@ Partial Class frmMain
         Me.DataGridView1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DataGridView1.Location = New System.Drawing.Point(3, 61)
         Me.DataGridView1.Name = "DataGridView1"
-        Me.DataGridView1.Size = New System.Drawing.Size(1140, 222)
+        Me.DataGridView1.Size = New System.Drawing.Size(1201, 222)
         Me.DataGridView1.TabIndex = 3
         '
         'GroupBox3
@@ -340,7 +344,7 @@ Partial Class frmMain
         Me.GroupBox3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox3.Location = New System.Drawing.Point(3, 3)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(1140, 52)
+        Me.GroupBox3.Size = New System.Drawing.Size(1201, 52)
         Me.GroupBox3.TabIndex = 4
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Search/Filter"
@@ -447,6 +451,15 @@ Partial Class frmMain
         Me.GroupBox2.TabIndex = 7
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Search/Filter"
+        '
+        'btnShowFail
+        '
+        Me.btnShowFail.Location = New System.Drawing.Point(1089, 16)
+        Me.btnShowFail.Name = "btnShowFail"
+        Me.btnShowFail.Size = New System.Drawing.Size(74, 26)
+        Me.btnShowFail.TabIndex = 21
+        Me.btnShowFail.Text = "Show Fail"
+        Me.btnShowFail.UseVisualStyleBackColor = True
         '
         'lblFailed
         '
@@ -627,14 +640,21 @@ Partial Class frmMain
         Me.Label2.TabIndex = 0
         Me.Label2.Text = "Search :"
         '
-        'btnShowFail
+        'Label12
         '
-        Me.btnShowFail.Location = New System.Drawing.Point(1089, 16)
-        Me.btnShowFail.Name = "btnShowFail"
-        Me.btnShowFail.Size = New System.Drawing.Size(74, 26)
-        Me.btnShowFail.TabIndex = 21
-        Me.btnShowFail.Text = "Show Fail"
-        Me.btnShowFail.UseVisualStyleBackColor = True
+        Me.Label12.AutoSize = True
+        Me.Label12.Location = New System.Drawing.Point(546, 31)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(66, 13)
+        Me.Label12.TabIndex = 18
+        Me.Label12.Text = "Lot number :"
+        '
+        'txtLotnumber
+        '
+        Me.txtLotnumber.Location = New System.Drawing.Point(618, 28)
+        Me.txtLotnumber.Name = "txtLotnumber"
+        Me.txtLotnumber.Size = New System.Drawing.Size(160, 20)
+        Me.txtLotnumber.TabIndex = 19
         '
         'frmMain
         '
@@ -716,4 +736,6 @@ Partial Class frmMain
     Friend WithEvents lblDelay As Label
     Friend WithEvents cbDeley As ComboBox
     Friend WithEvents btnShowFail As Button
+    Friend WithEvents txtLotnumber As TextBox
+    Friend WithEvents Label12 As Label
 End Class

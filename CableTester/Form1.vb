@@ -33,6 +33,7 @@ Public Class frmMain
             If DidWork = DialogResult.Cancel Then
                 'MessageBox.Show("Cancel Button Clicked")
             Else
+                txtLotnumber.Text = ""
                 Me.Cursor = Cursors.WaitCursor
                 strFileName = .FileName
                 'MessageBox.Show(strFileName)
@@ -454,6 +455,7 @@ Public Class frmMain
     End Sub
 
     Private Sub btnTestList_Click(sender As Object, e As EventArgs) Handles btnTestList.Click
+
         lblTested.Text = DataGridView2.RowCount.ToString
         vTotolPass = 0
         vTotolFail = 0
@@ -462,14 +464,62 @@ Public Class frmMain
         TestAllList()
         Me.Cursor = Cursors.Default
 
+
+        Dim vTestResult As Boolean
         If vTotolFail = 0 Then
             frmPass.ShowDialog()
+            vTestResult = True
         Else
             frmFail.ShowDialog()
+            vTestResult = False
         End If
 
-        'lblPassed.Text = vTotolPass.ToString
+        'version 1.0.1 -- to save file
+
+        Try
+            Me.Cursor = Cursors.WaitCursor
+            Dim strFile As String = "report.txt"
+            Dim fileExists As Boolean = File.Exists(strFile)
+            Dim sw As StreamWriter
+            If fileExists Then
+                File.Delete(strFile)
+                sw = New StreamWriter(File.Open(strFile, FileMode.OpenOrCreate))
+            Else
+                sw = New StreamWriter(File.Open(strFile, FileMode.Create))
+            End If
+
+            sw.WriteLine("Recipe File name : " & TextBox1.Text)
+            sw.WriteLine("Testing time : " & Now)
+            sw.WriteLine("Lot Number : " & txtLotnumber.Text)
+            sw.WriteLine("----------------------- ")
+            If vTestResult Then
+                sw.WriteLine("Testing Result : PASSED ")
+            Else
+                sw.WriteLine("Testing Result : FAILED ")
+                sw.WriteLine("----------------------- ")
+                Dim vOutput As String = ""
+                For i = 0 To DataGridView2.RowCount - 1
+                    If DataGridView2.Rows(i).Cells(7).Value = False Then
+                        vOutput = "Step :" & DataGridView2.Rows(i).Cells(0).Value & vbTab & "Signal : " & DataGridView2.Rows(i).Cells(1).Value & vbTab &
+                                "From : " & DataGridView2.Rows(i).Cells(2).Value & "(Pin " & DataGridView2.Rows(i).Cells(3).Value & ") " &
+                                "To : " & DataGridView2.Rows(i).Cells(4).Value & "(Pin " & DataGridView2.Rows(i).Cells(5).Value & ") " &
+                                vbTab & DataGridView2.Rows(i).Cells(7).Value
+                        sw.WriteLine(vOutput)
+                    End If
+                Next
+            End If
+            sw.Close()
+            Me.Cursor = Cursors.Default
+            MsgBox("Report finished")
+            Process.Start(strFile)
+        Catch ex As Exception
+
+        End Try
+
+
     End Sub
+
+
 
     Sub TestOne(rowIndex As Integer)
         Dim vSourceConnector As String
@@ -622,6 +672,7 @@ Public Class frmMain
 
         sw.WriteLine("Recipe File name : " & TextBox1.Text)
         sw.WriteLine("Testing time : " & Now)
+        sw.WriteLine("Lot Number : " & txtLotnumber.Text)
 
         Dim vOutput As String = ""
         For i = 0 To DataGridView2.RowCount - 1
@@ -637,9 +688,7 @@ Public Class frmMain
         Process.Start(strFile)
     End Sub
 
-    Private Sub cbDeley_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDeley.SelectedIndexChanged
 
-    End Sub
 
     Private Sub cbDeley_TextChanged(sender As Object, e As EventArgs) Handles cbDeley.TextChanged
         vDelay = Val(cbDeley.Text)
@@ -681,6 +730,7 @@ Public Class frmMain
         'MsgBox("Report finished")
         Process.Start(strFile)
     End Sub
+
 End Class
 
 Class TestStep
